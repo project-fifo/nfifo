@@ -1,0 +1,21 @@
+{
+  "name": "nFifo",
+  "version": "0.0.1",
+  "description": "Simple node FiFo connector",
+  "keywords": ["fifo", "api", "cloud"],
+  "author": "@killfil",
+  "main": "./index.js",
+  "bin": {
+  	"nfifo": "./bin/cmd.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "request": "~2.36.0"
+  },
+  "devDependencies": {
+    "mocha": "^1.20.1"
+  },
+  "scripts": {
+  	"test": "mocha"
+  }
+}
