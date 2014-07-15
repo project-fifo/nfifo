@@ -72,6 +72,14 @@ describe('Basic resource quering', function() {
 		})
 	})
 
+	it('Respond 404 on unknown dataset', function(done) {
+
+		fifo.send('datasets').get('unknown', function(err, res) {
+			assert.equal(res.statusCode, 404, 'Should be 404...')
+			done()
+		})
+	})
+
 	it('Can get hypervisors', function(done) {
 
 		fifo.send('hypervisors').get(function(err, res) {
