@@ -60,17 +60,17 @@ Fifo.prototype.buildParams = function(opts, defaultOpts) {
 
 	var params = {}
 
-	if (typeof opts != 'object')
-		params.args = opts
-	else
+	//typeof [] is 'object' !!
+	if (typeof opts == 'object' && !Array.isArray(opts))
 		params = opts
+	else
+		params.args = opts
 
 	//Args should be an array. if not build one...
 	if (!Array.isArray(params.args))
 		params.args = [params.args]
 
 	return this.addDefaults(params, defaultOpts)
-
 }
 
 
