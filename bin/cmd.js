@@ -13,8 +13,11 @@ nFifo.connect(function(fifo) {
 	var resource = args.shift()
 
 	fifo.send(resource).get(args, function(err, res) {
-		if (err)
-			return console.error('ERROR:', err)
+		if (err || res.statusCode > 300 || res.statusCode < 200 )
+			return console.log(JSON.stringify({
+				code: res.statusCode || 500,
+				message: err
+			}))
 
 		console.log(JSON.stringify(res.body))
 	})
