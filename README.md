@@ -10,7 +10,7 @@ It will read the file ~/.fifo just like pyfi to read the credentials
 
 ## How to use it
 
-* [As a dep](https://github.com/project-fifo/tests/)
+* [As a dep](https://github.com/project-fifo/nfifo/tests/)
 * As a cli wich outputs plain json (TODO: npm install nfifo -g)
 	* ```./bin/cmd.js hypervisors | json```
 	* ```./bin/cmd.js datasets 8639203c-d515-11e3-9571-5bf3a74f354f | json description```
