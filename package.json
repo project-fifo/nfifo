@@ -2,20 +2,27 @@
   "name": "nFifo",
   "version": "0.0.1",
   "description": "Simple node FiFo connector",
-  "keywords": ["fifo", "api", "cloud"],
+  "keywords": [
+    "fifo",
+    "api",
+    "cloud"
+  ],
   "author": "@killfil",
   "main": "./index.js",
   "bin": {
-  	"nfifo": "./bin/cmd.js"
+    "nfifo": "./bin/cmd.js",
+    "nfifo-upload-dataset": "./bin/upload-dataset.js"
   },
   "license": "MIT",
   "dependencies": {
+    "minimist": "^0.2.0",
+    "progress": "^1.1.7",
     "request": "~2.36.0"
   },
   "devDependencies": {
     "mocha": "^1.20.1"
   },
   "scripts": {
-  	"test": "mocha"
+    "test": "mocha"
   }
 }

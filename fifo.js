@@ -48,9 +48,14 @@ Fifo.prototype.access = function(user, pass, cb) {
 
 //Merge default options into obj
 function merge(obj, defaults) {
-	for (var k in defaults)
+	for (var k in defaults) {
+
 		if (typeof obj[k] == 'undefined')
 			obj[k] = defaults[k]
+
+		if (typeof obj[k] == 'object')
+			merge(obj[k], defaults[k])
+	}
 	return obj
 }
 
