@@ -99,14 +99,14 @@ function requestClosure(method, resource) {
 	//opts: {params: [], body: }
 	return function req(opts, cb) {
 
-			//If params specified, the first parameter will be the callback. (i.e. to get all the vms.)
-			if (!cb) {
+			//If first params is a function, there is no options to pass
+			if (typeof opts == 'function') {
 				cb = opts
 				opts = {}
 			}
 
 			var params = this.buildParams(opts, {method: method, resource: resource})
-			request(params, cb)
+			return request(params, cb)
 	}
 }
 
