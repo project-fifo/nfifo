@@ -96,7 +96,11 @@ function uploadZvol(fifo, fileName, manifest) {
 		json: false,
 		headers: {'content-type': 'application/x-gzip'}
 	}, function(err, res, body) {
-		assert.equal(res.statusCode == 200 || res.statusCode == 204, true, 'Dataset was not sucessfull uploaded: ' + res.statusCode + ' -> ' + (err || body))
+
+		if (err)
+			throw err
+
+		assert.equal(res.statusCode == 200 || res.statusCode == 204, true, 'Dataset was not sucessfull uploaded: ' + res.statusCode + ' -> ' + body)
 		console.log('Uploaded ok!', res.statusCode)
 	})
 
