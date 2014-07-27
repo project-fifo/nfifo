@@ -1,15 +1,19 @@
 #!/usr/bin/env node
 
 var nFifo = require('../index.js'),
-	minimist = require('minimist')
+	minimist = require('minimist'),
+	fs = require('fs')
 
 nFifo.connect(function(fifo) {
 
 	var argv = minimist(process.argv.slice(2), {
+		boolean: ['stdin', 'file', 'json', 'curl'],
 		default: {
 			method: 'get',
 			curl: false,
-			json: true
+			json: true,
+			file: false,
+			stdin: false
 		}
 	})
 
@@ -20,13 +24,26 @@ nFifo.connect(function(fifo) {
 
 	var resource = arguments.shift()
 
-	var remote = fifo.send(resource)[argv.method]({args: arguments, json: argv.json === true})
+	var remote = fifo.send(resource)[argv.method]({args: arguments, json: argv.json})
 
-	remote.pipe(process.stdout)
+	//Check if we want to send something
+	if (argv.file || argv.stdin) {
+		var input = argv.stdin? process.stdin : fs.createReadStream(argv.file)
+		input.pipe(remote).pipe(process.stdout)
+	}
+	else
+		remote.pipe(process.stdout)
 
 	remote.on('complete', function(res, body) {
+
 		if (res.statusCode != 200)
-			process.stderr.write('\n\nResponse Code: ' + res.statusCode + '\n');
+			process.stderr.write('\n\nResponse Code: ' + res.statusCode + '\n')
+
+		if (res.statusCode == 303) {
+			process.stderr.write('UUID: ' + res.headers.location.split('/').pop() + '\n')
+			process.stderr.write('Location: ' + res.headers.location + '\n')
+		}
+
 	})
 
 	remote.on('error', function(err) {

@@ -1,13 +1,17 @@
 {
-  "name": "nFifo",
-  "version": "0.0.1",
-  "description": "Simple node FiFo connector",
+  "name": "nfifo",
+  "version": "0.1.2",
+  "description": "Simple node FiFo connector and cli",
   "keywords": [
     "fifo",
     "api",
     "cloud"
   ],
-  "author": "@killfil",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/project-fifo/nfifo"
+  },
+  "author": "Phillip Neumann <pneumann@gmail.com>",
   "main": "./index.js",
   "bin": {
     "nfifo": "./bin/cmd.js",
@@ -15,6 +19,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "ini": "^1.2.1",
     "minimist": "^0.2.0",
     "progress": "^1.1.7",
     "request": "~2.36.0"
