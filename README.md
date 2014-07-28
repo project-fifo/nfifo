@@ -20,7 +20,7 @@ Additionally, you can install it as a CLI, with **npm install nfifo -g**:
 
 * Show dataset base64-14.1.0 details
 
- ```nfifo datasets 8639203c-d515-11e3-9571-5bf3a74f354f```
+ ```nfifo datasets 8639203c-d515-11e3-9571-5bf3a74f354f | prettyjson```
 
 * Delete dataset base64-14.1.0
 
@@ -48,3 +48,7 @@ Additionally, you can install it as a CLI, with **npm install nfifo -g**:
 nfifo-upload-dataset.js --zvol file.zvol.gz --manifest manifest_file.json
 Uploading (19.0s) [===========----------------------------------------------------------------------] 17% ETA 90.8s
 ```
+
+
+**Note:**
+  *prettyjson* and *json* can be install with npm install -g ...
