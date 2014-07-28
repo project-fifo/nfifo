@@ -101,7 +101,7 @@ function uploadZvol(fifo, fileName, manifest) {
 			throw err
 
 		assert.equal(res.statusCode == 200 || res.statusCode == 204, true, 'Dataset was not sucessfull uploaded: ' + res.statusCode + ' -> ' + body)
-		console.log('Uploaded ok!', res.statusCode)
+		console.log('Upload status code ', res.statusCode)
 	})
 
 	var read = fs.createReadStream(fileName)

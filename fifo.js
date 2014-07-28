@@ -18,7 +18,7 @@ Fifo.prototype.login = function(user, pass, cb) {
 			cb(err)
 
 		if (res.statusCode != 303)
-			return cb(new Error('Could not login :('))
+			return cb(new Error('Could not login :( ' + res.statusCode))
 
 		this.token = res.headers['x-snarl-token']
 		cb && cb(null, res)
