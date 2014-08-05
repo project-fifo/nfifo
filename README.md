@@ -1,5 +1,7 @@
 # nFiFo
 
+[![NPM](https://nodei.co/npm/nfifo.png?global=true)](https://nodei.co/npm/nfifo/)
+
 This is a little handy node lib to connect to [Project FiFo](https://docs.project-fifo.net/), an VM administration system that uses [SmartOS](http://smartos.org/).
 
 It does not pretend to be the official node.js fifo libray, wich is probably what [fifo.js](https://github.com/project-fifo/fifo.js) is, nor the oficial CLI client, wich is [pyfi](https://github.com/project-fifo/pyfi).
@@ -16,7 +18,7 @@ Additionally, you can install it as a CLI, with **npm install nfifo -g**:
 
 * Show all hypervisors aliases and ip's
 
-  ``` nfifo hypervisors | json  -a host alias sysinfo.Product```
+  ```nfifo hypervisors | json  -a host alias sysinfo.Product```
 
 * Show dataset base64-14.1.0 details
 
