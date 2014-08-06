@@ -10,7 +10,7 @@ It will read the file ~/.fifo just like [pyfi](https://github.com/project-fifo/p
 
 ## How to use it
 
-Check out an example [here](https://github.com/project-fifo/nfifo/tests/).
+Check out an example [here](https://github.com/project-fifo/nfifo/tree/master/test).
 
 Additionally, you can install it as a CLI, with **npm install nfifo -g**:
 
