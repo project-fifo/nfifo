@@ -4,7 +4,7 @@ var Fifo = require('./fifo'),
 	ini = require('ini'),
 	fs = require('fs')
 
-var fname = process.env.HOME + '/.fifo'
+var fname = (process.env.HOME || '/root') + '/.fifo'
 
 function writeConfigFile(config) {
 	var i = ini.stringify(config, 'fifo_default')

@@ -94,6 +94,9 @@ Fifo.prototype.addDefaults = function(opts, defaultOpts) {
 		headers: {'x-snarl-token': this.token, 'x-full-list': true }
 	})
 
+	if (params.json)
+		params.headers['content-type'] = 'application/json;charset=UTF-8'
+
 	return params
 }
 

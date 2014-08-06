@@ -56,7 +56,7 @@ nFifo.connect(function(fifo) {
 				headers = Object.keys(req._headers).map(function(k) {
 					return "-H '" + k + ": " + req._headers[k] + "'"
 				}).join(' ')
-			process.stderr.write('curl -i -X ' + req.method + ' ' + fifo.endpoint.split(':')[0] + '://' + url + ' ' + headers + '\n\n');
+			process.stderr.write('curl --insecure -i -X ' + req.method + ' ' + fifo.endpoint.split(':')[0] + '://' + url + ' ' + headers + '\n\n');
 		})
 
 })

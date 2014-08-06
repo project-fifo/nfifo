@@ -2,13 +2,11 @@
 
 [![NPM](https://nodei.co/npm/nfifo.png?global=true)](https://nodei.co/npm/nfifo/)
 
-This is a little handy node lib to connect to [Project FiFo](https://docs.project-fifo.net/), an VM administration system that uses [SmartOS](http://smartos.org/).
+This is a little handy node.js lib to connect to [Project FiFo](https://docs.project-fifo.net/), an VM administration system that uses [SmartOS](http://smartos.org/).
 
-It does not pretend to be the official node.js fifo libray, wich is probably what [fifo.js](https://github.com/project-fifo/fifo.js) is, nor the oficial CLI client, wich is [pyfi](https://github.com/project-fifo/pyfi).
+Its a simplist alternative to [fifo.js](https://github.com/project-fifo/fifo.js) that let you query the [fifo api](https://project-fifo.net/display/PF/API).
 
-It just lets you quickly query the [fifo api](https://project-fifo.net/display/PF/API).
-
-It will read the file ~/.fifo just like pyfi to read the credentials
+It will read the file ~/.fifo just like [pyfi](https://github.com/project-fifo/pyfi) to read the login credentials
 
 ## How to use it
 
@@ -53,4 +51,4 @@ Uploading (19.0s) [===========--------------------------------------------------
 
 
 **Note:**
-  *prettyjson* and *json* can be install with npm install -g ...
+  *prettyjson* and *json* can be installed with npm install -g ...
