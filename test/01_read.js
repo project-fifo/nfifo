@@ -3,7 +3,7 @@ var nFifo = require('../index'),
 	assert = require('assert')
 
 
-describe('Basic resource quering', function() {
+describe('Read operations', function() {
 
 	var fifo = null,
 		state = {}

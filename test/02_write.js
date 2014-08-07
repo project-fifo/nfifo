@@ -2,15 +2,22 @@
 var nFifo = require('../index'),
 	assert = require('assert')
 
-function areSimilar(a, b) {
+function areSimilar(a, b, recursive) {
+
 	Object.keys(a).forEach(function(k) {
-		if (a[k] != b[k])
-			return 'This are not similar: ' + a[k] + ' -> ' + b[k]
+		if (typeof a[k] === 'object') {
+			if (recursive)
+				return areSimilar(a[k], b[k])
+			else
+				return true
+		}
+
+		// console.log('-->', k, a[k], b[k])
+		assert.equal(a[k], b[k], 'This are not similar: ' + k + ' -> ' + a[k] + ' vs ' + b[k])
 	})
-	return true
 }
 
-describe('Create resources', function() {
+describe('Write operations', function() {
 
 	var fifo = null,
 		prefix = 'nfifo-test-' + new Date().getTime() + '_'
@@ -44,7 +51,7 @@ describe('Create resources', function() {
 	//Wipe all created resource
 	after(function(done) {
 
-		var n = 4
+		var n = 5
 		function tick() {
 			if (n <= 1) return done()
 			n--
@@ -54,6 +61,7 @@ describe('Create resources', function() {
 		fifo.send('ipranges').delete(state.iprangeUUID, tick)
 		fifo.send('networks').delete(state.networkUUID, tick)
 		fifo.send('vms').delete(state.vmUUID, tick)
+		fifo.send('vms').delete(state.vmUUID, tick) //Twice, so it ensure the vm is deleted when the creation fails.
 	})
 
 	describe('Package', function() {
@@ -74,7 +82,7 @@ describe('Create resources', function() {
 			fifo.send('packages').get(state.packageUUID, function(err, res) {
 				assert.ifError(err)
 				assert.equal(res.statusCode, 200)
-				assert(areSimilar(res.body, create.package))
+				areSimilar(create.package, res.body)
 				state.package = res.body
 				done()
 			})
@@ -100,7 +108,7 @@ describe('Create resources', function() {
 			fifo.send('ipranges').get(state.iprangeUUID, function(err, res) {
 				assert.ifError(err)
 				assert.equal(res.statusCode, 200)
-				assert(areSimilar(res.body, create.iprange))
+				assert(res.body.free.indexOf(create.iprange.first) > -1, 'Created iprange does not contain the first IP')
 				state.iprange = res.body
 				done()
 			})
@@ -121,7 +129,7 @@ describe('Create resources', function() {
 			fifo.send('networks').get(state.networkUUID, function(err, res) {
 				assert.ifError(err)
 				assert.equal(res.statusCode, 200)
-				assert(areSimilar(res.body, create.network))
+				areSimilar(create.network, res.body)
 				state.iprange = res.body
 				done()
 			})
@@ -153,26 +161,50 @@ describe('Create resources', function() {
 
 	describe('Virtual machine', function() {
 
-		it('A dataset exists', function(done) {
+		it('Check if a dataset exists', function(done) {
 
-			//Get a dataset to create the vm
+			//Get the last dataset to create the vm
 			fifo.send('datasets').get(function(err, res) {
 				assert.ifError(err)
-				state.datasetUUID = res.body[0].uuid
+				assert(res.body.length && res.body.length > 0, 'Need a dataset to test vm creation. Please import one.')
+				var dataset = res.body[res.body.length - 1]
+				state.datasetUUID = dataset.uuid
 				done()
+				console.log('        using', dataset.name, dataset.version, dataset.uuid)
 			})
 		})
 
-		it('Create', function(done) {
+		it('Dry run fails for invalid vm data', function(done) {
+
+			var vm = create.machine
+			vm.package = null
+
+			fifo.send('vms/dry_run').put({body: create.machine}, function(err, res) {
+				assert.ifError(err)
+				assert.equal(res.statusCode, 422, '422 was expected')
+				done()
+			})
+
+		})
+
+		it('Dry run reports success', function(done) {
 
 			var vm = create.machine
 			vm.package = state.packageUUID
 			vm.config.networks.net0 = state.networkUUID
 			vm.dataset = state.datasetUUID
 
-			// console.log('---->', vm)
+			fifo.send('vms/dry_run').put({body: create.machine}, function(err, res) {
+				assert.ifError(err)
+				assert.equal(res.statusCode, 201, 'Didnt get a 201, but could be a temporary problem')
+				done()
+			})
 
-			fifo.send('vms').post({body: vm}, function(err, res) {
+		})
+
+		it('Create', function(done) {
+
+			fifo.send('vms').post({body: create.machine}, function(err, res) {
 				assert.ifError(err)
 				assert.equal(res.statusCode, 303)
 				state.vmUUID = res.headers.location.split('/').pop()
@@ -180,27 +212,33 @@ describe('Create resources', function() {
 			})
 		})
 
-		it('Was created succefull', function(done) {
+		it('Successfully created', function(done) {
 
-			function getVMState(uuid, cb) {
-				fifo.send('vms').get(uuid, function(err, res) {
+			var startedAt = new Date().getTime()
+			function checkVmIsRunning() {
+
+				fifo.send('vms').get(state.vmUUID, function(err, res) {
 					assert.ifError(err)
 					assert.equal(res.statusCode, 200)
-					cb(res.body.state)
-				})
-			}
 
-			function checkVmIsRunning() {
-				getVMState(state.vmUUID, function(status) {
-					if (status === 'running')
+					areSimilar(create.machine, res.body, false)
+
+					var state = res.body.state
+
+					if (state === 'running')
 						return done()
 
-					if (status.indexOf('fail') > -1)
-						assert.equal(true, false, 'VM was not created: ' + status)
+					if (state.indexOf('fail') > -1)
+						assert(false, 'State: ' + state + ' -> ' + res.body.log.map(function(l) {return l.log}).join(', ') )
 
-					// console.log('---> status:', status)
+					var took = new Date().getTime() - startedAt
+					if (took > 50 * 1000)
+						assert(false, 'Took too much, giving up. State: ' + state + ' -> ' + res.body.log.map(function(l) {return l.log}).join(', '))
+
 					setTimeout(checkVmIsRunning, 1000)
+
 				})
+
 			}
 
 			checkVmIsRunning()
