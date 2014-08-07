@@ -252,7 +252,7 @@ describe('Write operations', function() {
 						assert(false, 'State: ' + state + ' -> ' + res.body.log.map(function(l) {return l.log}).join(', ') )
 
 					var took = new Date().getTime() - startedAt
-					if (took > 50 * 1000)
+					if (took > 70 * 1000)
 						assert(false, 'Took too much, giving up. State: ' + state + ' -> ' + res.body.log.map(function(l) {return l.log}).join(', '))
 
 					setTimeout(checkVmIsRunning, 1000)
