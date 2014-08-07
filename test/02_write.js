@@ -212,6 +212,25 @@ describe('Write operations', function() {
 			})
 		})
 
+		it('Update fifo metadata', function(done) {
+
+			fifo.send('vms').put({args: [state.vmUUID, 'metadata', 'jingles'], body: {color: '#a4bdfc'}}, function(err, res) {
+				assert.ifError(err)
+				assert.equal(res.statusCode, 204)
+				done()
+			})
+
+		})
+
+		it('Metadata was saved', function(done) {
+			fifo.send('vms').get(state.vmUUID, function(err, res) {
+				assert.ifError(err)
+				assert.equal(res.statusCode, 200)
+				assert.equal(res.body.metadata.jingles.color, '#a4bdfc')
+				done()
+			})
+		})
+
 		it('Successfully created', function(done) {
 
 			var startedAt = new Date().getTime()
@@ -222,6 +241,7 @@ describe('Write operations', function() {
 					assert.equal(res.statusCode, 200)
 
 					areSimilar(create.machine, res.body, false)
+					areSimilar(create.machine.config.metadata, res.body.config.metadata)
 
 					var state = res.body.state
 
