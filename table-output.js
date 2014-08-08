@@ -40,7 +40,7 @@ var rowsDefinition = {
 		{title: 'Cpu Share', getter: 'config.cpu_shares'},
 		{title: 'Type', getter: 'config.type'},
 		{title: 'Package', getter: 'package'},
-		{title: 'Dataset', getter: 'dataset'},
+		{title: 'Dataset', getter: 'config.dataset'},
 		{title: 'Server', getter: 'hypervisor'},
 	],
 	datasets: [
