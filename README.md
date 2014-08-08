@@ -14,9 +14,13 @@ Check out an example [here](https://github.com/project-fifo/nfifo/tree/master/te
 
 Additionally, you can install it as a CLI, with **npm install nfifo -g**:
 
-* Show all hypervisors aliases and ip's
+* Show all vms, in table format
 
-  ```nfifo hypervisors | json  -a host alias sysinfo.Product```
+  ```nfifo vms```
+
+* Show all vms, in plain json format
+
+  ```nfifo --table false vms```
 
 * Show dataset base64-14.1.0 details
 
@@ -29,7 +33,6 @@ Additionally, you can install it as a CLI, with **npm install nfifo -g**:
 * Show all packages, with curl tip
 
  ```nfifo --curl true packages```
-
 
 * Dump the zvol of the dataset base64-14.1.0 to a file
 
