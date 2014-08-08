@@ -2,18 +2,20 @@
 
 var nFifo = require('../index.js'),
 	minimist = require('minimist'),
-	fs = require('fs')
+	fs = require('fs'),
+	TableOutput = require('../table-output')
 
 nFifo.connect(function(fifo) {
 
 	var argv = minimist(process.argv.slice(2), {
-		boolean: ['stdin', 'file', 'json', 'curl'],
+		boolean: ['stdin', 'file', 'json', 'curl', 'table'],
 		default: {
 			method: 'get',
 			curl: false,
 			json: true,
 			file: false,
-			stdin: false
+			stdin: false,
+			table: true
 		}
 	})
 
@@ -31,8 +33,11 @@ nFifo.connect(function(fifo) {
 		var input = argv.stdin? process.stdin : fs.createReadStream(argv.file)
 		input.pipe(remote).pipe(process.stdout)
 	}
-	else
-		remote.pipe(process.stdout)
+	else {
+		//See if we wans table output, on the listing.
+		var output = argv.table && arguments.length < 1 ? new TableOutput({resource: resource}): process.stdout
+		remote.pipe(output)
+	}
 
 	remote.on('complete', function(res, body) {
 
