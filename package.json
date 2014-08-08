@@ -21,6 +21,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "cli-table": "^0.3.0",
     "ini": "^1.2.1",
     "minimist": "^0.2.0",
     "progress": "^1.1.7",
