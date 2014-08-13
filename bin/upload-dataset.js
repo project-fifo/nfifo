@@ -19,7 +19,6 @@ if (argv.help || argv.h || !argv.zvol || !argv.manifest)
 function validateFiles(argv) {
 
 	assert.equal(argv.zvol.slice(-7), 'zvol.gz', 'zvol is not a .zvol.gz file')
-	assert.equal(argv.manifest.slice(-4), 'json', 'manifest is not a .json file')
 	assert.equal(fs.existsSync(argv.zvol), true, 'zvol file ' + argv.zvol + ' does not exist')
 	assert.equal(fs.existsSync(argv.manifest), true, 'manifest file ' + argv.zvol + ' does not exist')
 
