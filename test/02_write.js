@@ -24,6 +24,7 @@ describe('Write operations', function() {
 		state = {},
 		create = {
 			package: {cpu_cap: 100, name: prefix + 'small', quota: 10, ram: 1024},
+			packageMini: {cpu_cap: 100, name: prefix + 'mini', quota: 8, ram: 512},
 			iprange: {tag: 'admin', first: '1.1.1.10', gateway: '1.1.1.1', last: '1.1.1.20', name: prefix + 'range', netmask: '255.255.255.0', network: '1.1.1.0', tag: 'admin'},
 			network: {name: prefix + 'network'},
 			machine: {
@@ -51,13 +52,14 @@ describe('Write operations', function() {
 	//Wipe all created resource
 	after(function(done) {
 
-		var n = 5
+		var n = 6
 		function tick() {
 			if (n <= 1) return done()
 			n--
 		}
 
 		fifo.send('packages').delete(state.packageUUID, tick)
+		fifo.send('packages').delete(state.packageMiniUUID, tick)
 		fifo.send('ipranges').delete(state.iprangeUUID, tick)
 		fifo.send('networks').delete(state.networkUUID, tick)
 		fifo.send('vms').delete(state.vmUUID, tick)
@@ -181,7 +183,7 @@ describe('Write operations', function() {
 
 			fifo.send('vms/dry_run').put({body: create.machine}, function(err, res) {
 				assert.ifError(err)
-				assert.equal(res.statusCode, 422, '422 was expected')
+				assert(res.statusCode >= 400)
 				done()
 			})
 
@@ -262,6 +264,68 @@ describe('Write operations', function() {
 			}
 
 			checkVmIsRunning()
+
+		})
+
+
+		it('Create a second package, to test resizing', function(done) {
+
+			fifo.send('packages').post({body: create.packageMini}, function(err, res) {
+				assert.ifError(err)
+				assert.equal(res.statusCode, 303)
+				state.packageMiniUUID = res.headers.location.split('/').pop()
+				done()
+			})
+
+		})
+
+		it('Can resize', function(done) {
+
+			var opts = {args: state.vmUUID, body: {package: state.packageMiniUUID}}
+			fifo.send('vms').put(opts, function(err, res) {
+				assert.ifError(err)
+				assert.equal(res.statusCode, 204)
+				done()
+			})
+
+		})
+
+		it('VM shows correct size', function(done) {
+
+			function getVm() {
+				fifo.send('vms').get(state.vmUUID, function(err, res) {
+					assert.ifError(err)
+					assert.equal(res.statusCode, 200)
+					assert.equal(res.body.state, 'running')
+
+					if (res.body.config.ram == create.packageMini.ram)
+						return done()
+
+					//Loop until vm is the correct size
+					setTimeout(getVm, 1000)
+				})
+
+			}
+
+			getVm()
+
+		})
+
+		it('VM list shows correct size', function(done) {
+
+			fifo.send('vms').get(function(err, res) {
+				assert.ifError(err)
+				assert.equal(res.statusCode, 200)
+
+				res.body.forEach(function(vm) {
+					if (vm.uuid != state.vmUUID)
+						return
+
+					assert.equal(vm.state, 'running')
+					assert.equal(vm.config.ram, create.packageMini.ram)
+				})
+				done()
+			})
 
 		})
 
