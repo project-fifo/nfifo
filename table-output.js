@@ -95,7 +95,7 @@ function getValue(row, getter) {
 	var val = eval('row.' + getter)
 
 	//If its a uuid, print a shorter version..
-	if (val && val.length == 36)
+	if (val && val.length == 36 && val.split('-').length == 5)
 		return val.split('-')[0]
 	return val
 }
