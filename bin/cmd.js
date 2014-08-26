@@ -16,6 +16,9 @@ nFifo.connect(function(fifo) {
 			file: false,
 			stdin: false,
 			table: true
+		},
+		alias: {
+			'X': 'method'
 		}
 	})
 
@@ -26,7 +29,7 @@ nFifo.connect(function(fifo) {
 
 	var resource = arguments.shift()
 
-	var remote = fifo.send(resource)[argv.method]({args: arguments, json: argv.json})
+	var remote = fifo.send(resource)[argv.method.toLowerCase()]({args: arguments, json: argv.json})
 
 	//Check if we want to send something
 	if (argv.file || argv.stdin) {
