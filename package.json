@@ -25,7 +25,7 @@
     "ini": "^1.2.1",
     "minimist": "^0.2.0",
     "progress": "^1.1.7",
-    "request": "~2.36.0"
+    "request": "^2.51.0"
   },
   "devDependencies": {
     "mocha": "^1.20.1"
