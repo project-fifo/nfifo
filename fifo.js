@@ -4,24 +4,41 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 var request = require('request')
 
 var Fifo = module.exports = function fifo(ip, api_version) {
+	var schema = ip.indexOf('http') < 0? 'https://': ''
+
 	this.ip = ip
 	this.api_version = api_version || '0.1.0'
-	this.endpoint = 'https://' + ip + '/api/' + this.api_version + '/'
+	this.endpoint = schema + ip + '/api/' + this.api_version + '/'
+
+	this.defaultParams = {
+		json: true,
+		headers: {'x-full-list': true}
+	}
 }
 
 //Explicit login
 Fifo.prototype.login = function(user, pass, cb) {
 	var body = {user: user, password: pass}
 
-	this.send('sessions').post({body: body}, function(err, res) {
+	this.send('sessions').post({body: body}, function(err, res, body) {
 		if (err)
 			cb(err)
+
+		//When running on the browser, we will not get the raw 303, but the redirected one. will be status 200
+		if (typeof window == 'object') {
+
+			if (res.statusCode != 200)
+				return cb(new Error('Could not login :( ' + res.statusCode))
+
+			this.token = body.session
+			return cb && cb(null, res, body)
+		}
 
 		if (res.statusCode != 303)
 			return cb(new Error('Could not login :( ' + res.statusCode))
 
 		this.token = res.headers['x-snarl-token']
-		cb && cb(null, res)
+		cb && cb(null, res, body)
 
 	}.bind(this))	
 }
@@ -88,18 +105,24 @@ Fifo.prototype.addDefaults = function(opts, defaultOpts) {
 	if (opts.args)
 		url += '/' + opts.args.join('/')
 
-	merge(params, {
-		json: true,
-		url:  url,
-		headers: {'x-snarl-token': this.token, 'x-full-list': true }
-	})
+	//Put the default params/headers
+	merge(params, this.defaultParams)
+
+	params.url = url
+
+	if (this.token)
+		params.headers['x-snarl-token'] = this.token
 
 	if (params.json)
 		params.headers['content-type'] = 'application/json;charset=UTF-8'
 
+	//If the request is json, request will transform it for us. if not, assume its json anyway :P
+	if (!params.json)
+		params.body = JSON.stringify(params.body)
+
+
 	return params
 }
-
 
 function requestClosure(method, resource) {
 	method = method || 'GET'
@@ -114,7 +137,17 @@ function requestClosure(method, resource) {
 			}
 
 			var params = this.buildParams(opts, {method: method, resource: resource})
-			return request(params, cb)
+
+			// return request(params, cb)
+
+			//In case the response is json, and json: true is not set, parse the body
+			//i.e. https://jira.project-fifo.net/browse/FIFO-566
+			return request(params, function(err, res, body) {
+				if (typeof body === 'string')
+					body = JSON.parse(body)
+
+				cb && cb(err, res, body)
+			})
 	}
 }
 
