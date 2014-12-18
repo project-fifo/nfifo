@@ -1,6 +1,6 @@
 {
   "name": "nfifo",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Simple node.js lib and cli that connects with a Project-FiFo API",
   "keywords": [
     "Project-FiFo",
