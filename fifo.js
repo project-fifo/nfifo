@@ -22,7 +22,7 @@ Fifo.prototype.login = function(user, pass, cb) {
 
 	this.send('sessions').post({body: body}, function(err, res, body) {
 		if (err)
-			cb(err)
+			return cb(err)
 
 		//When running on the browser, we will not get the raw 303, but the redirected one. will be status 200
 		if (typeof window == 'object') {
