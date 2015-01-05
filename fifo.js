@@ -28,14 +28,14 @@ Fifo.prototype.login = function(user, pass, cb) {
 		if (typeof window == 'object') {
 
 			if (res.statusCode != 200)
-				return cb(new Error('Could not login :( ' + res.statusCode))
+				return cb(new Error(body || ('Could not login :( ' + res.statusCode)))
 
 			this.token = body.session
 			return cb && cb(null, res, body)
 		}
 
 		if (res.statusCode != 303)
-			return cb(new Error('Could not login :( ' + res.statusCode))
+			return cb(new Error(body || ('Could not login :( ' + res.statusCode)))
 
 		this.token = res.headers['x-snarl-token']
 		cb && cb(null, res, body)
