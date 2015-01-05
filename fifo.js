@@ -88,8 +88,8 @@ Fifo.prototype.buildParams = function(opts, defaultOpts) {
 	else
 		params.args = opts
 
-	//Args should be an array. if not build one...
-	if (!Array.isArray(params.args))
+	//Args should be an array. if string put it in the array...
+	if (params.args && !Array.isArray(params.args))
 		params.args = [params.args]
 
 	return this.addDefaults(params, defaultOpts)
@@ -143,8 +143,12 @@ function requestClosure(method, resource) {
 			//In case the response is json, and json: true is not set, parse the body
 			//i.e. https://jira.project-fifo.net/browse/FIFO-566
 			return request(params, function(err, res, body) {
-				if (typeof body === 'string')
-					body = JSON.parse(body)
+				if (typeof body === 'string' && body[0] == '{')
+					try {
+						body = JSON.parse(body || '{}')
+					} catch(e){
+						console.log('Could not parse body', e.message)
+					}
 
 				cb && cb(err, res, body)
 			})
