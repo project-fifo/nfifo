@@ -143,7 +143,7 @@ function requestClosure(method, resource) {
 			//In case the response is json, and json: true is not set, parse the body
 			//i.e. https://jira.project-fifo.net/browse/FIFO-566
 			return request(params, function(err, res, body) {
-				if (typeof body === 'string' && (body[0] == '{' || body[0] == '[')
+				if (typeof body === 'string' && (body[0] == '{' || body[0] == '['))
 					try {
 						body = JSON.parse(body || '{}')
 					} catch(e){
